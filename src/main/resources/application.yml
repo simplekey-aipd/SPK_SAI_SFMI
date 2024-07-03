@@ -1,0 +1,29 @@
+server:
+  port: 8081
+
+spring:
+#  datasource:
+##    url: jdbc:mariadb://localhost:3306/danbee
+#    url: jdbc:mariadb://223.130.140.173:3306/danbee
+#    username: root
+#    password: password
+#    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MariaDBDialect
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      enabled: true
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure : ERROR
+    org.springframework.web : DEBUG
+
