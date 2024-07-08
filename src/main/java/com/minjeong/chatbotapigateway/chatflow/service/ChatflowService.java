@@ -157,11 +157,14 @@ public class ChatflowService {
         // result.result.0.message, nodeType, result.resultStatus
 
         String bpAction = "chat";
-        if (resultNode.get("parameters").get("dtmf").asText().equals("dtmf")) {
-            bpAction = "dtmf";
+        // resultNode.get("parameters").get("dtmf") 가 있는지 확인 후, 있다면 .asText() 값 = dtmf 일 경우 bpAction = "dtmf"
+        if (resultNode.get("parameters").get("dtmf") != null) {
+            if (resultNode.get("parameters").get("dtmf").asText().equals("dtmf")) {
+                bpAction = "dtmf";
+            }
         }
+
         // resultNode.get("result") 가 2개 이상일 경우
-        // resultNode.get("result").get(0).get("message").asText() + resultNode.get("result").get(1).get("message").asText()
         // resultNode.get("result").get(1).get("nodeType").asText() 가 slot 인지 확인
         StringBuilder message = new StringBuilder();
         if (resultNode.get("result").isArray()) {

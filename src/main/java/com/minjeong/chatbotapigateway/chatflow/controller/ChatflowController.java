@@ -29,43 +29,4 @@ public class ChatflowController {
 
     // TODO : close, timeout API 추가
 
-    /*
-    ## chatflow API
-    - welcome, message
-
-    ------ 기본 정보 ------
-    url :
-    https://danbee.ai/chatflow/chatbot/{version}/{chatbotId}/welcome.do
-    https://danbee.ai/chatflow/chatbot/{version}/{chatbotId}/message.do
-
-    method : POST
-
-    header : "Content-Type": "application/json"
-
-    ---------------------
-
-    # welcome message API
-
-    - path parameter
-    version, chatbotId
-
-    - request body
-    user_id
-
-    - response
-    (required=true)
-    session_id, ins_id(대화 흐름 인스턴스), intent_id(대화 의도-slot, carousel)
-    node_id, param_id(slot, carousel)
-
-
-    # message flow API
-
-    - path parameter
-
-    - request body
-
-    - response
-    (required=true)
-
-    */
 }

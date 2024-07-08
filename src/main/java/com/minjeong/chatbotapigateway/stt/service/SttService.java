@@ -1,5 +1,6 @@
 package com.minjeong.chatbotapigateway.stt.service;
 
+import com.minjeong.chatbotapigateway.stt.WavHeader;
 import com.minjeong.chatbotapigateway.stt.dto.SttResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -17,13 +18,17 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -51,21 +56,18 @@ public class SttService {
     }
 
     // PCM -> WAV file 변환 (return 값 : File)
-    public File convertPcmToWav(MultipartFile file) {
-        Path currentPath = Paths.get("");
-        File wavFile = new File(currentPath.toAbsolutePath() + "/"
-                + Objects.requireNonNull(file.getOriginalFilename()).replace(".pcm", ".wav"));
+    public File convertPcmToWav(byte[] audioBytes) {
+        File wavFile = new File("audio.wav");
 
         try {
-            byte[] pcmData = file.getBytes();
-            byte[] wavData = new byte[44 + pcmData.length];
+            byte[] wavData = new byte[44 + audioBytes.length];
 
             // WAV header
             ByteBuffer buffer = ByteBuffer.wrap(wavData);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
 
             buffer.put("RIFF".getBytes());
-            buffer.putInt(36 + pcmData.length);
+            buffer.putInt(36 + audioBytes.length);
             buffer.put("WAVEfmt ".getBytes());
             buffer.putInt(16);
             buffer.putShort((short) 1);
@@ -75,10 +77,10 @@ public class SttService {
             buffer.putShort((short) 2);
             buffer.putShort((short) 16);
             buffer.put("data".getBytes());
-            buffer.putInt(pcmData.length);
+            buffer.putInt(audioBytes.length);
 
             // PCM data
-            System.arraycopy(pcmData, 0, wavData, 44, pcmData.length);
+            System.arraycopy(audioBytes, 0, wavData, 44, audioBytes.length);
 
             Files.write(wavFile.toPath(), wavData);
         } catch (IOException e) {
@@ -88,8 +90,31 @@ public class SttService {
         return wavFile;
     }
 
-    public Object recognizeSpeech(List<MultipartFile> request) throws JSONException, IOException, InterruptedException {
-        return transcribeFile(request.get(0));
+//    public File convert(byte[] audio) {
+//        byte[] wavData = WavHeader.wavHeader(audio, 1);
+//
+//        // 현재 날짜 & 시간을 이용해 unique한 wave 파일명 생성
+//        String fileName = System.currentTimeMillis() + ".wav";
+//        FileOutputStream fos = null;
+//        try {
+//            fos = new FileOutputStream("./wav/" + fileName);
+//            fos.write(wavData);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return new File("./wav/" + fileName);
+//    }
+
+    public Object recognizeSpeech(Map<String, Object> data) throws JSONException, IOException, InterruptedException {
+        log.info("## recognizeSpeech method");
+        // Map 으로 받은 data를 JSONObject 로 변환
+        JSONObject request = new JSONObject(data);
+
+        JSONObject jsonObject = request.getJSONObject("audio");
+        log.info("jsonObject.get(content) : "+ jsonObject.get("content"));
+        byte[] audioBytes = Base64.getDecoder().decode(jsonObject.getString("content"));
+
+        return transcribeFile(audioBytes);
     }
 
     // rtzr token 발급
@@ -116,7 +141,7 @@ public class SttService {
     }
 
     // rtzr stt 호출 -> return id
-    public Object transcribeFile(MultipartFile multipartFile) throws IOException, InterruptedException, JSONException {
+    public Object transcribeFile(byte[] audioBytes) throws IOException, InterruptedException, JSONException {
 
         log.info("TranscribeFile start time : " + System.currentTimeMillis());
         accessToken = getAccessToken();
@@ -128,7 +153,7 @@ public class SttService {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .build();
 
-        File file = convertPcmToWav(multipartFile);
+        File file = convertPcmToWav(audioBytes);
         log.info("File : {}, {}", file.getName(), file.getAbsolutePath());
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
@@ -223,7 +248,6 @@ public class SttService {
         }
 
         // json parsing
-
         log.info("polling end time : " + System.currentTimeMillis());
         log.info("response : " + response);
 
@@ -250,7 +274,7 @@ public class SttService {
         resultItem.put("alternatives", alternativesArray);
         resultItem.put("channelTag", 1);
         resultItem.put("resultEndTime", "3.5s");
-        resultItem.put("languageCode", "ko-KR"); // 언어 코드를 필요에 따라 동적으로 설정
+        resultItem.put("languageCode", "ko-KR");
 
         resultsArray.put(resultItem);
 
@@ -259,9 +283,9 @@ public class SttService {
         return resultJson.toString();
     }
 
-    // wav file base64 encoding
-//    public byte[] encodeWavFileToBase64(MultipartFile file) {
-//        return Base64.getEncoder().encode(convertPcmToWav(file));
-//    }
+//     wav file base64 encoding
+    public byte[] encodeWavFileToBase64(MultipartFile file) throws IOException {
+        return Base64.getEncoder().encode(file.getBytes());
+    }
 
 }
