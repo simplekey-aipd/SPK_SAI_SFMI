@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.chatflow.dto.response;
+package com.minjeong.chatbotapigateway.chatbot.danbee.dto.response;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.chatflow.dto.response;
+package com.minjeong.chatbotapigateway.chatbot.danbee.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

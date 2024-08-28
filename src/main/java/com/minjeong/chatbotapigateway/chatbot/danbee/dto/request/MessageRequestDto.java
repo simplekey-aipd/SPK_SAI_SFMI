@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.chatflow.dto.request;
+package com.minjeong.chatbotapigateway.chatbot.danbee.dto.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;

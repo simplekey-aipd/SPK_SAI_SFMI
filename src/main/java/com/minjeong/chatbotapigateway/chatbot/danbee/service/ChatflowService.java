@@ -1,12 +1,12 @@
-package com.minjeong.chatbotapigateway.chatflow.service;
+package com.minjeong.chatbotapigateway.chatbot.danbee.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.minjeong.chatbotapigateway.chatflow.dto.request.MessageRequestDto;
-import com.minjeong.chatbotapigateway.chatflow.dto.request.WelcomeRequestDto;
-import com.minjeong.chatbotapigateway.chatflow.dto.response.MessageResponseDto;
-import com.minjeong.chatbotapigateway.chatflow.dto.response.WelcomeResponseDto;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.request.MessageRequestDto;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.request.WelcomeRequestDto;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.response.MessageResponseDto;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.response.WelcomeResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

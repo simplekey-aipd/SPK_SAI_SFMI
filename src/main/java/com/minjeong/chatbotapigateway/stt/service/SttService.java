@@ -18,18 +18,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -55,7 +49,7 @@ public class SttService {
         return BP_API_KEY;
     }
 
-    // PCM -> WAV file 변환 (return 값 : File)
+    // PCM -> WAV file 변환
     public File convertPcmToWav(byte[] audioBytes) {
         File wavFile = new File("audio.wav");
 

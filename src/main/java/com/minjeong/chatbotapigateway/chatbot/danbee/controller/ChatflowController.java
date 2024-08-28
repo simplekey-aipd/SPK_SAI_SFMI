@@ -1,8 +1,8 @@
-package com.minjeong.chatbotapigateway.chatflow.controller;
+package com.minjeong.chatbotapigateway.chatbot.danbee.controller;
 
-import com.minjeong.chatbotapigateway.chatflow.dto.request.MessageRequestDto;
-import com.minjeong.chatbotapigateway.chatflow.dto.request.WelcomeRequestDto;
-import com.minjeong.chatbotapigateway.chatflow.service.ChatflowService;
+import com.minjeong.chatbotapigateway.chatbot.danbee.service.ChatflowService;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.request.MessageRequestDto;
+import com.minjeong.chatbotapigateway.chatbot.danbee.dto.request.WelcomeRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chatflow/v1")
+@RequestMapping("/chatbot/danbee/v1")
 public class ChatflowController {
 
     private final ChatflowService chatflowService;
