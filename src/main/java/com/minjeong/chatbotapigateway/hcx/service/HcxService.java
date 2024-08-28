@@ -60,4 +60,59 @@ public class HcxService {
         return new HcxResponseDto(response.getString("aimessage"));
     }
 
+    public String getChatbotRequestBody(HttpServletRequest req) {
+        String body = "";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+
+        try {
+            req.setCharacterEncoding("UTF-8");
+            InputStream inputStream = req.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        body = stringBuilder.toString();
+        log.info("[getChatbotRequestBody] - body : {}", body);
+        return body;
+    }
+
+    public JSONObject sendPostRequestToHcx(String userId, String category, Map<String, String> data) {
+        String url = "https://llm-ax.claion.io/skens/api";
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("seq_num", userId);
+        requestBody.put("category", category);
+        requestBody.put("data", data);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        JSONObject response;
+        try {
+            response = new JSONObject(restTemplate.postForObject(url, requestBody, String.class));
+            log.info("[SendPostRequest] - response : {}", response);
+
+        } catch (Exception e) {
+            log.error("[SendPostRequest] - error : {}", e.getMessage());
+            response = new JSONObject("{\"status_code\": 5000, \"message\": \"ChatbotApiGateway - Internal Server Error\"}");
+        }
+        return response;
+    }
 }

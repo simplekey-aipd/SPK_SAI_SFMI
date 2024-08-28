@@ -23,4 +23,16 @@ public class HcxController {
         return ResponseEntity.ok(hcxApiService.sendHcxMessage(dto));
 //        return ResponseEntity.ok(hcxService.hcx(dto));
     }
+
+    // 시간대 요청 및 등록
+    @PostMapping("/schedule")
+    public String schedule(HttpServletRequest req) {
+        return getInfoByChatbotResponseService.getScheduleByHcxResp(req);
+    }
+
+    // 주소 요청 및 등록
+    @PostMapping("/setAddress")
+    public String address(HttpServletRequest req) {
+        return getInfoByChatbotResponseService.getAddressByHcxResp(req);
+    }
 }
