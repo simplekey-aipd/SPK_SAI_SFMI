@@ -5,6 +5,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+/*
+    Chatbot 의 사용자 변수 값 저장
+ */
 @Slf4j
 @Service
 public class SetChatbotResponseService {
@@ -42,44 +45,53 @@ public class SetChatbotResponseService {
         return resJson.toString();
     }
 
-    /*
-        {
-            "status_code": 2000,
-            "message": "OK",
-            "data": {
-                "addr": "서울특별시 송파구 삼전동 백제고분로28길 28-12",
-                "retry_count": 0,
-        }
-}
-         */
     public String setChatbotAddressByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
 
         JSONObject data = hcxResponse.getJSONObject("data");
+
         // 주소
-        JSONObject resArrJson = new JSONObject();
-        resArrJson.put("name", "address");
-        resArrJson.put("value", data.getString("addr"));
-        resArrJson.put("type", "TEXT");
-        resArrJson.put("action", "EQ");
-        resArrJson.put("valueType", "TEXT");
+        JSONObject userVariableJsonObj_addr = new JSONObject();
+        userVariableJsonObj_addr.put("name", "address");
+        userVariableJsonObj_addr.put("value", data.getString("addr"));
+        userVariableJsonObj_addr.put("type", "TEXT");
+        userVariableJsonObj_addr.put("action", "EQ");
+        userVariableJsonObj_addr.put("valueType", "TEXT");
 
-        // retry count
-        JSONObject resArrJson1 = new JSONObject();
-        resArrJson1.put("name", "retry_count");
-        resArrJson1.put("value", data.getInt("retry_count"));
-        resArrJson1.put("type", "TEXT");
-        resArrJson1.put("action", "EQ");
-        resArrJson1.put("valueType", "TEXT");
-
-        userVariableJsonArray.put(resArrJson);
-        userVariableJsonArray.put(resArrJson1);
+        userVariableJsonArray.put(userVariableJsonObj_addr);
+        userVariableJsonArray.put(setUserVariable_hcxResultCode(hcxResponse));
+        userVariableJsonArray.put(setUserVariable_retryCount(hcxResponse));
 
         resJson.put("valid", "true");
         resJson.put("userVariable", userVariableJsonArray);
 
         log.info("[getAddress] - responseJson : {}", resJson);
+        return resJson.toString();
+    }
+
+    public String setChatbotDetailAddressByHcxResponse(JSONObject hcxResponse) {
+        JSONObject resJson = new JSONObject();
+        JSONArray userVariableJsonArray = new JSONArray();
+
+        JSONObject data = hcxResponse.getJSONObject("data");
+
+        // 상세 주소
+        JSONObject userVariableJsonObj_detail_addr = new JSONObject();
+        userVariableJsonObj_detail_addr.put("name", "detail_address");
+        userVariableJsonObj_detail_addr.put("value", data.getString("detail_addr"));
+        userVariableJsonObj_detail_addr.put("type", "TEXT");
+        userVariableJsonObj_detail_addr.put("action", "EQ");
+        userVariableJsonObj_detail_addr.put("valueType", "TEXT");
+
+        userVariableJsonArray.put(userVariableJsonObj_detail_addr);
+        userVariableJsonArray.put(setUserVariable_hcxResultCode(hcxResponse));
+        userVariableJsonArray.put(setUserVariable_retryCount(hcxResponse));
+
+        resJson.put("valid", "true");
+        resJson.put("userVariable", userVariableJsonArray);
+
+        log.info("[getDetailAddress] - responseJson : {}", resJson);
         return resJson.toString();
     }
 
@@ -110,5 +122,25 @@ public class SetChatbotResponseService {
 
         log.info("[getAddress] - responseJson : {}", resJson);
         return resJson.toString();
+    }
+
+    public JSONObject setUserVariable_hcxResultCode(JSONObject hcxResponse) {
+        JSONObject userVariableJsonObj_hcx_result_code = new JSONObject();
+        userVariableJsonObj_hcx_result_code.put("name", "hcx_result_code");
+        userVariableJsonObj_hcx_result_code.put("value", String.valueOf(hcxResponse.getInt("status_code")));
+        userVariableJsonObj_hcx_result_code.put("type", "TEXT");
+        userVariableJsonObj_hcx_result_code.put("action", "EQ");
+        userVariableJsonObj_hcx_result_code.put("valueType", "TEXT");
+        return userVariableJsonObj_hcx_result_code;
+    }
+
+    public JSONObject setUserVariable_retryCount(JSONObject hcxResponse) {
+        JSONObject userVariableJsonObj_retry_count = new JSONObject();
+        userVariableJsonObj_retry_count.put("name", "retry_count");
+        userVariableJsonObj_retry_count.put("value", hcxResponse.getJSONObject("data").getInt("retry_count"));
+        userVariableJsonObj_retry_count.put("type", "NUMBER");
+        userVariableJsonObj_retry_count.put("action", "EQ");
+        userVariableJsonObj_retry_count.put("valueType", "NUMBER");
+        return userVariableJsonObj_retry_count;
     }
 }

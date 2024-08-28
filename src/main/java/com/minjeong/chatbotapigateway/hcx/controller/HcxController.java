@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/hcx/v1")
 public class HcxController {
 
-    private final HcxService hcxService;
     private final HcxApiService hcxApiService;
     private final GetInfoByChatbotResponseService getInfoByChatbotResponseService;
 
@@ -34,5 +33,11 @@ public class HcxController {
     @PostMapping("/setAddress")
     public String address(HttpServletRequest req) {
         return getInfoByChatbotResponseService.getAddressByHcxResp(req);
+    }
+
+    // 상세 주소 요청 및 등록
+    @PostMapping("/setDetailAddress")
+    public String detailAddress(HttpServletRequest req) {
+        return getInfoByChatbotResponseService.getDetailAddressByHcxResp(req);
     }
 }
