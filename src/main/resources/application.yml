@@ -1,11 +1,5 @@
 server:
   port: 5001
-  ssl:
-    key-store: classpath:keystore.jks
-    key-store-password: spkeyssl
-    key-password: spkeyssl
-    key-alias: spkeyssl
-    enabled: true
 
 spring:
 #  datasource:
@@ -14,6 +8,15 @@ spring:
 #    username: root
 #    password: password
 #    driver-class-name: org.mariadb.jdbc.Driver
+  datasource:
+#    url: jdbc:mysql://localhost:3306/skens_poc
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mariadb://101.79.8.7:3306/skens_apigw?useUnicode=true&connectionCollation=utf8mb4_unicode_ci&characterEncoding=UTF-8
+    username: root
+    password: password
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     show-sql: true
     generate-ddl: true
@@ -22,7 +25,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database-platform: org.hibernate.dialect.MariaDBDialect
   servlet:
     multipart:
       max-file-size: 50MB
