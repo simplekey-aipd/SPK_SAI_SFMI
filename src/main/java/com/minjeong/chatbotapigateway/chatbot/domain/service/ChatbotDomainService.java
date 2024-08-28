@@ -4,6 +4,7 @@ import com.minjeong.chatbotapigateway.chatbot.domain.domain.ChatbotDomain;
 import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainResponseDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.repository.ChatbotDomainRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,9 @@ public class ChatbotDomainService {
 
     private final ChatbotDomainRepository domainRepository;
 
+    @Transactional
     public ChatbotDomainResponseDto addDomain(ChatbotDomainDto dto) {
+        log.info("[DomainService] - Add domain : chatbot name = {}", dto.getChatbotName());
         ChatbotDomain chatbotDomain = ChatbotDomain.builder()
                 .chatbotName(dto.getChatbotName())
                 .domainId(dto.getDomainId())
@@ -41,5 +44,16 @@ public class ChatbotDomainService {
                 .chatbotName(domainInfo.getChatbotName())
                 .signature(domainInfo.getSignature())
                 .build();
+    }
+
+    public String getDomainUrl(String chatbotId) {
+        ChatbotDomain domainInfo = domainRepository.findByDomainId(chatbotId);
+        String ncloudDomain = "https://clovachatbot.ncloud.com/api/chatbot/messenger/v1";
+        return ncloudDomain + "/" + domainInfo.getDomainId() + "/" + domainInfo.getSignature() + "/message";
+    }
+
+    public String getSecretKey(String chatbotId) {
+        ChatbotDomain domainInfo = domainRepository.findByDomainId(chatbotId);
+        return domainInfo.getSecretKey();
     }
 }

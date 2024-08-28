@@ -20,7 +20,6 @@ public class ChatbotDomainController {
     @PostMapping("/add")
     public ResponseEntity<?> addDomain(@RequestBody ChatbotDomainDto dto) {
         ChatbotDomainResponseDto responseDto = chatbotDomainService.addDomain(dto);
-        log.info("[ChatbotDomainController] - Add chatbot domain : " + responseDto.getDomainId());
         return ResponseEntity.ok(responseDto);
     }
 
