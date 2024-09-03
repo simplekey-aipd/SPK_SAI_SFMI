@@ -1,43 +1,77 @@
 package com.minjeong.chatbotapigateway.hcx.controller;
 
-import com.minjeong.chatbotapigateway.hcx.dto.HcxRequestDto;
 import com.minjeong.chatbotapigateway.hcx.service.GetInfoByChatbotResponseService;
-import com.minjeong.chatbotapigateway.hcx.service.HcxApiService;
-import com.minjeong.chatbotapigateway.hcx.service.HcxService;
+import com.minjeong.chatbotapigateway.hcx.service.HcxTestService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/hcx/v1")
 public class HcxController {
 
-    private final HcxApiService hcxApiService;
     private final GetInfoByChatbotResponseService getInfoByChatbotResponseService;
+    private final HcxTestService hcxTestService;
 
-    @PostMapping("/hcx")
-    public ResponseEntity<?> hcx(@RequestBody HcxRequestDto dto) {
-        return ResponseEntity.ok(hcxApiService.sendHcxMessage(dto));
-//        return ResponseEntity.ok(hcxService.hcx(dto));
-    }
-
-    // 시간대 요청 및 등록
-    @PostMapping("/schedule")
-    public String schedule(HttpServletRequest req) {
-        return getInfoByChatbotResponseService.getScheduleByHcxResp(req);
-    }
-
-    // 주소 요청 및 등록
+    // 1. 주소 요청 및 등록
     @PostMapping("/setAddress")
     public String address(HttpServletRequest req) {
+        log.warn("[HCX API] - /setAddress | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         return getInfoByChatbotResponseService.getAddressByHcxResp(req);
     }
 
-    // 상세 주소 요청 및 등록
+    // 2. 상세 주소 요청 및 등록
     @PostMapping("/setDetailAddress")
     public String detailAddress(HttpServletRequest req) {
+        log.warn("[HCX API] - /setDetailAddress | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         return getInfoByChatbotResponseService.getDetailAddressByHcxResp(req);
+    }
+
+    // 3. 가능한 시간대 요청
+    @PostMapping("/getSchedule")
+    public String schedule(HttpServletRequest req) {
+        log.warn("[HCX API] - /schedule | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return getInfoByChatbotResponseService.getScheduleByHcxResp(req);
+    }
+
+    // 4. 방문 일정 확정
+    @PostMapping("/setSchedule")
+    public String setSchedule(HttpServletRequest req) {
+        log.warn("[HCX API] - /setSchedule | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return getInfoByChatbotResponseService.setScheduleByHcxResp(req);
+    }
+
+    // 5. 사용자 정보
+    @PostMapping("/setUserInfo")
+    public String userInfo(HttpServletRequest req) {
+        log.warn("[HCX API] - /setUserInfo | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return getInfoByChatbotResponseService.setUserInfo(req);
+    }
+
+
+    // ===============
+    // TEST
+    // 주소 response 테스트용
+    @PostMapping("/test/setAddress")
+    public String testSetAddress(HttpServletRequest req) {
+        log.warn("[HCX API] - /test/setAddress | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return hcxTestService.testSetAddressByHcxResp(req);
+    }
+
+    // 시간대 response 테스트용
+    @PostMapping("/test/getSchedule")
+    public String testGetSchedule(HttpServletRequest req) {
+        log.warn("[HCX API] - /test/getSchedule | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return hcxTestService.testGetSchedulesByHcxResp(req);
+    }
+
+    // 시간대 등록 response 테스트용
+    @PostMapping("/test/setSchedule")
+    public String testSetSchedules(HttpServletRequest req) {
+        log.warn("[HCX API] - /test/setSchedules | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return hcxTestService.testSetSchedulesByHcxResp(req);
     }
 }

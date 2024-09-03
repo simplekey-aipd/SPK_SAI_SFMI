@@ -18,7 +18,7 @@ public class GetInfoByChatbotResponseService {
     private final SetChatbotResponseService setChatbotResponseService;
 
     /*
-    사용자가 말한 주소로 유효성, 권역 확인 하는 API
+    1. 사용자가 말한 주소로 유효성, 권역 확인 하는 API
         1) chatbot 에서 가져올 정보
             userId
             category : ADDR
@@ -42,19 +42,22 @@ public class GetInfoByChatbotResponseService {
 
         log.info("[getAddress] - userId : {}, address : {}", userId, address);
 
+        log.warn("[hcxService.sendPostRequestToHcx] - start | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+        log.warn("[hcxService.sendPostRequestToHcx] - end | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
 
         int statusCode = hcxResponse.getInt("status_code");
-
         if (statusCode == 2000) {
-            return setChatbotResponseService.setChatbotAddressByHcxResponse(hcxResponse);
+            log.info("statusCode : 2000 -> setChatbotAddressByHcxResponse");
+            return setChatbotResponseService.setChatbotResponseAddressByHcxResponse(hcxResponse);
         } else {
-            return setChatbotResponseService.setChatbotExceptionByHcxResponse(hcxResponse);
+            log.warn("statusCode : {} -> setChatbotExceptionByHcxResponse", statusCode);
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
         }
     }
 
     /*
-    사용자가 말한 상세 주소로 DB 에 등록되어 있는지 확인하는 API
+    2. 사용자가 말한 상세 주소로 DB 에 등록되어 있는지 확인하는 API
         1) chatbot 에서 가져올 정보
             userId
             category : DETAIL_ADDR
@@ -78,25 +81,27 @@ public class GetInfoByChatbotResponseService {
 
         log.info("[getDetailAddress] - userId : {}, detailAddress : {}", userId, detailAddress);
 
+        log.warn("[hcxService.sendPostRequestToHcx] - start | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+        log.warn("[hcxService.sendPostRequestToHcx] - end | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
 
         int statusCode = hcxResponse.getInt("status_code");
 
         if (statusCode == 2000) {
             log.warn("statusCode : 2000 -> setChatbotDetailAddressByHcxResponse");
-            return setChatbotResponseService.setChatbotDetailAddressByHcxResponse(hcxResponse);
+            return setChatbotResponseService.setChatbotResponseDetailAddressByHcxResponse(hcxResponse);
         } else {
             log.warn("statusCode : {} -> setChatbotExceptionByHcxResponse", statusCode);
-            return setChatbotResponseService.setChatbotExceptionByHcxResponse(hcxResponse);
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
         }
     }
 
     /*
-    사용자가 요청한 날짜에 가능한 시간대 정보를 가져오는 API
+    3. 사용자가 요청한 날짜에 가능한 시간대 정보를 가져오는 API
         1) chatbot 에서 가져올 정보
             userId
             category : DATE
-            date : 사용자가 선택한 날짜 - 전체날짜_yyyymmdd(yyyy-mm-dd)
+            date : 사용자가 선택한 날짜 - date(yyyy-mm-dd)
             code : 전입(Z02)/전출(Z03)
         2) hcx response 에서 가져올 정보
             data.schedule(i).text : 사용자에게 보여줄 text
@@ -111,8 +116,8 @@ public class GetInfoByChatbotResponseService {
 
         JSONObject userVariables = reqJson.getJSONObject("userVariables");
         String category = userVariables.getJSONObject("category").getString("value");
+        String date = userVariables.getJSONObject("date").getString("value");
         String code = userVariables.getJSONObject("code").getString("value");
-        String date = userVariables.getJSONObject("전체날짜_yyyymmdd").getString("value");
 
         Map<String, String> data = new HashMap<>();
         data.put("code", code);
@@ -121,13 +126,93 @@ public class GetInfoByChatbotResponseService {
 
         // hcx 로 request 보내기
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+        
+        // 하드 코딩으로 response 저장
 
         if (hcxResponse.getInt("status_code") == 2000) {
+            log.info("statusCode : 2000 -> setChatbotDateByHcxResponse");
             // chatbot 으로 보낼 response
-            return setChatbotResponseService.setChatbotScheduleByHcxResponse(hcxResponse);
+            return setChatbotResponseService.setChatbotResponseDateByHcxResponse(hcxResponse);
         } else {
-            return setChatbotResponseService.setChatbotExceptionByHcxResponse(hcxResponse);
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
         }
     }
 
+    /*
+    4. 사용자가 선택한 시간대로 방문 일정 확정하는 API
+        1) chatbot 에서 가져올 정보
+            userId
+            category : SCHEDULE
+            time : HH:MM
+        2) hcx response 에서 가져올 정보
+            retry_count : 재시도 횟수
+     */
+    public String setScheduleByHcxResp(HttpServletRequest req) {
+        String body = hcxService.getChatbotRequestBody(req);
+
+        // chatbot 에서 data 가져오기
+        JSONObject reqJson = new JSONObject(body);
+        String userId = reqJson.getString("userId");
+
+        JSONObject userVariables = reqJson.getJSONObject("userVariables");
+        String category = userVariables.getJSONObject("category").getString("value");
+        String time = userVariables.getJSONObject("time").getString("value");
+
+        Map<String, String> data = new HashMap<>();
+        data.put("time", time);
+
+        log.info("[setSchedules] - userId : {}, time : {}", userId, time);
+
+        // hcx 로 request 보내기
+        JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+
+        // 하드 코딩으로 response 저장
+
+        if (hcxResponse.getInt("status_code") == 2000) {
+            // chatbot 으로 보낼 response
+            return setChatbotResponseService.setChatbotResponseDefaultByHcxResponse(hcxResponse);
+        } else {
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
+        }
+    }
+
+    /*
+    5. 사용자 정보 등록 API
+        1) chatbot 에서 가져올 정보
+            userId
+            category : USER
+            name, phone, birth
+        2) hcx response 에서 가져올 정보
+            retry_count : 재시도 횟수
+     */
+    public String setUserInfo(HttpServletRequest req) {
+        String body = hcxService.getChatbotRequestBody(req);
+
+        // chatbot 에서 data 가져오기
+        JSONObject reqJson = new JSONObject(body);
+        String userId = reqJson.getString("userId");
+
+        JSONObject userVariables = reqJson.getJSONObject("userVariables");
+        String category = userVariables.getJSONObject("category").getString("value");
+        String name = userVariables.getJSONObject("name").getString("value");
+        String phone = userVariables.getJSONObject("phone").getString("value");
+        String birth = userVariables.getJSONObject("birth").getString("value");
+
+        Map<String, String> data = new HashMap<>();
+        data.put("name", name);
+        data.put("phone", phone);
+        data.put("birth", birth);
+
+        // hcx 로 request 보내기
+        JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+
+        // 하드 코딩으로 response 저장
+
+        if (hcxResponse.getInt("status_code") == 2000) {
+            // chatbot 으로 보낼 response
+            return setChatbotResponseService.setChatbotResponseDefaultByHcxResponse(hcxResponse);
+        } else {
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
+        }
+    }
 }

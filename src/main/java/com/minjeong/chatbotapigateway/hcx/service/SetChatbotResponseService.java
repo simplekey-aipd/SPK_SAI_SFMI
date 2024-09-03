@@ -12,40 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SetChatbotResponseService {
 
-    public String setChatbotScheduleByHcxResponse(JSONObject hcxResponse) {
-        JSONObject resJson = new JSONObject();
-        JSONArray userVariableJsonArray = new JSONArray();
-
-        for (int i = 0; i < 3; i++) {
-            String schedule_text = hcxResponse.getJSONObject("data").getJSONObject("schedule" + (i + 1)).getString("text");
-            String schedule_data = hcxResponse.getJSONObject("data").getJSONObject("schedule" + (i + 1)).getString("data");
-            String variableName = "schedule" + (i + 1);
-
-            JSONObject resArrJson = new JSONObject();
-            resArrJson.put("name", variableName);
-            resArrJson.put("value", schedule_data);
-            resArrJson.put("type", "TEXT");
-            resArrJson.put("action", "EQ");
-            resArrJson.put("valueType", "TEXT");
-
-            JSONObject resArrJson1 = new JSONObject();
-            resArrJson1.put("name", variableName + "_text");
-            resArrJson1.put("value", schedule_text);
-            resArrJson1.put("type", "TEXT");
-            resArrJson1.put("action", "EQ");
-            resArrJson1.put("valueType", "TEXT");
-
-            userVariableJsonArray.put(resArrJson);
-            userVariableJsonArray.put(resArrJson1);
-        }
-        resJson.put("valid", "true");
-        resJson.put("userVariable", userVariableJsonArray);
-
-        log.info("[getSchedules] - responseJson : {}", resJson);
-        return resJson.toString();
-    }
-
-    public String setChatbotAddressByHcxResponse(JSONObject hcxResponse) {
+    public String setChatbotResponseAddressByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
 
@@ -67,10 +34,11 @@ public class SetChatbotResponseService {
         resJson.put("userVariable", userVariableJsonArray);
 
         log.info("[getAddress] - responseJson : {}", resJson);
+        log.warn("[getAddress] - time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         return resJson.toString();
     }
 
-    public String setChatbotDetailAddressByHcxResponse(JSONObject hcxResponse) {
+    public String setChatbotResponseDetailAddressByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
 
@@ -92,17 +60,67 @@ public class SetChatbotResponseService {
         resJson.put("userVariable", userVariableJsonArray);
 
         log.info("[getDetailAddress] - responseJson : {}", resJson);
+        log.warn("[getDetailAddress] - time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         return resJson.toString();
     }
 
+    public String setChatbotResponseDateByHcxResponse(JSONObject hcxResponse) {
+        JSONObject resJson = new JSONObject();
+        JSONArray userVariableJsonArray = new JSONArray();
+
+        for (int i = 0; i < 3; i++) {
+            String schedule_text = hcxResponse.getJSONObject("data").getJSONObject("schedule" + (i + 1)).getString("text");
+            String schedule_data = hcxResponse.getJSONObject("data").getJSONObject("schedule" + (i + 1)).getString("data");
+            String variableName = "schedule" + (i + 1);
+
+            JSONObject userVariableJsonObj_schedule_data = new JSONObject();
+            userVariableJsonObj_schedule_data.put("name", variableName + "_data");
+            userVariableJsonObj_schedule_data.put("value", schedule_data);
+            userVariableJsonObj_schedule_data.put("type", "TEXT");
+            userVariableJsonObj_schedule_data.put("action", "EQ");
+            userVariableJsonObj_schedule_data.put("valueType", "TEXT");
+
+            JSONObject userVariableJsonObj_schedule_text = new JSONObject();
+            userVariableJsonObj_schedule_text.put("name", variableName + "_text");
+            userVariableJsonObj_schedule_text.put("value", schedule_text);
+            userVariableJsonObj_schedule_text.put("type", "TEXT");
+            userVariableJsonObj_schedule_text.put("action", "EQ");
+            userVariableJsonObj_schedule_text.put("valueType", "TEXT");
+
+            userVariableJsonArray.put(userVariableJsonObj_schedule_data);
+            userVariableJsonArray.put(userVariableJsonObj_schedule_text);
+        }
+        resJson.put("valid", "true");
+        resJson.put("userVariable", userVariableJsonArray);
+
+        log.info("[getSchedules] - responseJson : {}", resJson);
+        return resJson.toString();
+    }
+
+    public String setChatbotResponseDefaultByHcxResponse(JSONObject hcxResponse) {
+        JSONObject resJson = new JSONObject();
+        JSONArray userVariableJsonArray = new JSONArray();
+
+        userVariableJsonArray.put(setUserVariable_hcxResultCode(hcxResponse));
+        userVariableJsonArray.put(setUserVariable_retryCount(hcxResponse));
+
+        resJson.put("valid", "true");
+        resJson.put("userVariable", userVariableJsonArray);
+
+        log.info("[setDefaultResp] - responseJson : {}", resJson);
+        log.warn("[setDefaultResp] - time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return resJson.toString();
+    }
+
+    // Exception
     // 예외 일 때 사용자 변수 저장
-    public String setChatbotExceptionByHcxResponse(JSONObject hcxResponse) {
+    public String setChatbotResponseExceptionByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
 
         JSONObject resArrJson = new JSONObject();
         resArrJson.put("name", "hcx_result_code");
-        resArrJson.put("value", hcxResponse.getInt("status_code"));
+        resArrJson.put("value", String.valueOf(hcxResponse.getInt("status_code")));
         resArrJson.put("type", "TEXT");
         resArrJson.put("action", "EQ");
         resArrJson.put("valueType", "TEXT");
@@ -121,6 +139,7 @@ public class SetChatbotResponseService {
         resJson.put("userVariable", userVariableJsonArray);
 
         log.info("[getAddress] - responseJson : {}", resJson);
+        log.warn("[getAddress] - time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         return resJson.toString();
     }
 
