@@ -81,19 +81,6 @@ public class HcxAndChatbotService {
         body = stringBuilder.toString();
         log.warn(body);
 
-        // TODO : hcx 응답에 따라 hcx_result_code 의 value 값 변경
-        //  + responseStatus 변경
-        //  + hcx 에서 schedule1,2,3 이 list 로 넘어오면 해당 변수에 값 저장
-
-        // domain : https://llm-ax.claion.io
-        // request body :{
-        //    "seq_num" : gid,
-        //    "category" : "ADDR",
-        //    "data" : {
-        //        "addr" : "서울시 송파구 삼전동 백제고분로28길 28-12 가동 301호 입니다."
-        //    }
-        //}
-
         /* 커스텀 조건 응답 JSON */
         JSONObject resJson = new JSONObject();
         JSONObject resArrJson = new JSONObject();

@@ -107,11 +107,11 @@ public class HcxService {
         JSONObject response;
         try {
             response = new JSONObject(restTemplate.postForObject(url, requestBody, String.class));
-            log.info("[SendPostRequest] - response : {}", response);
+            log.info("[sendPostRequestToHcx] - response : {}", response);
 
         } catch (Exception e) {
-            log.error("[SendPostRequest] - error : {}", e.getMessage());
-            response = new JSONObject("{\"status_code\": 5000, \"message\": \"ChatbotApiGateway - Internal Server Error\"}");
+            log.error("[sendPostRequestToHcx] - HCX error : {}", e.getMessage());
+            response = new JSONObject("{\"status_code\": 5000, \"message\": \"ChatbotApiGateway - HCX - Internal Server Error\"}");
         }
         return response;
     }

@@ -47,6 +47,7 @@ public class ClovaChatbotController {
     // {chatbotId}/customApi/toHcx
     @PostMapping("/test/custom")
     public String testCoustom(HttpServletRequest req) {
+        log.warn("[Custom API] - /test/custom | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
         String customApiResponse = hcxAndChatbotService.customApi(req);
         log.info("Custom API Response : " + customApiResponse);
         return customApiResponse;
