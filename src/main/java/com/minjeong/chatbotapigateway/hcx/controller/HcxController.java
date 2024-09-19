@@ -51,6 +51,20 @@ public class HcxController {
         return getInfoByChatbotResponseService.setUserInfo(req);
     }
 
+    // 6. CUSTOM _ 시간대 9~18 시간으로 변경
+    @PostMapping("/setScheduleCustom")
+    public String setScheduleCustom(HttpServletRequest req) {
+        log.warn("[HCX API] - /setScheduleCustom | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return getInfoByChatbotResponseService.setScheduleCustom(req);
+    }
+
+    // 7. 의도 파악
+    @PostMapping("/getIntent")
+    public String intent(HttpServletRequest req) {
+        log.warn("[HCX API] - /intent | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        return getInfoByChatbotResponseService.getIntentByHcxResp(req);
+    }
+
 
     // ===============
     // TEST

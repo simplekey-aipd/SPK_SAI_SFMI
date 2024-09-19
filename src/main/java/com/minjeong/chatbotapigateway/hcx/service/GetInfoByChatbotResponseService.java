@@ -156,12 +156,12 @@ public class GetInfoByChatbotResponseService {
 
         JSONObject userVariables = reqJson.getJSONObject("userVariables");
         String category = userVariables.getJSONObject("category").getString("value");
-        String time = userVariables.getJSONObject("time").getString("value");
+        String req_time_data = userVariables.getJSONObject("req_time_data").getString("value");
 
         Map<String, String> data = new HashMap<>();
-        data.put("time", time);
+        data.put("time", req_time_data);
 
-        log.info("[setSchedules] - userId : {}, time : {}", userId, time);
+        log.info("[setSchedules] - userId : {}, req_time_data : {}", userId, req_time_data);
 
         // hcx 로 request 보내기
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
@@ -211,6 +211,47 @@ public class GetInfoByChatbotResponseService {
         if (hcxResponse.getInt("status_code") == 2000) {
             // chatbot 으로 보낼 response
             return setChatbotResponseService.setChatbotResponseDefaultByHcxResponse(hcxResponse);
+        } else {
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
+        }
+    }
+
+    public String setScheduleCustom(HttpServletRequest req) {
+        String body = hcxService.getChatbotRequestBody(req);
+
+        // chatbot 에서 data 가져오기
+        JSONObject reqJson = new JSONObject(body);
+        String userId = reqJson.getString("userId");
+
+        String time = reqJson.getJSONObject("userVariables").getJSONObject("time").getString("value");
+
+        // 9~18 시 사이 값(영업시간)으로 변환
+        if (Integer.parseInt(time.substring(0, 2)) < 9) {
+            time = Integer.parseInt(time.substring(0, 2)) + 12 + time.substring(2);
+        } else if (Integer.parseInt(time.substring(0, 2)) > 18) {
+            time = Integer.parseInt(time.substring(0, 2)) - 12 + time.substring(2);
+        }
+
+        return setChatbotResponseService.setChatbotResponseScheduleCustom(time);
+    }
+
+    public String getIntentByHcxResp(HttpServletRequest req) {
+        String body = hcxService.getChatbotRequestBody(req);
+
+        JSONObject reqJson = new JSONObject(body);
+        String userId = reqJson.getString("userId");
+
+        JSONObject userVariables = reqJson.getJSONObject("userVariables");
+        String category = userVariables.getJSONObject("category").getString("value");
+        String user_intent = userVariables.getJSONObject("user_intent").getString("value");
+
+        Map<String, String> data = new HashMap<>();
+        data.put("message", user_intent);
+
+        JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+
+        if (hcxResponse.getInt("status_code") == 2000) {
+            return setChatbotResponseService.setChatbotResponseIntentByHcxResponse(hcxResponse);
         } else {
             return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
         }
