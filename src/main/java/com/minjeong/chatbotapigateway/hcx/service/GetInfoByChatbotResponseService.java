@@ -42,9 +42,9 @@ public class GetInfoByChatbotResponseService {
 
         log.info("[getAddress] - userId : {}, address : {}", userId, address);
 
-        log.warn("[hcxService.sendPostRequestToHcx] - start | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        log.warn("[hcxService.sendPostRequestToHcx] - start | time(HH:mm:ss) : {}", java.time.LocalTime.now());
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
-        log.warn("[hcxService.sendPostRequestToHcx] - end | time(HH:mm:ss) : {}, time(ms) : {}", java.time.LocalTime.now(), System.currentTimeMillis());
+        log.warn("[hcxService.sendPostRequestToHcx] - end | time(HH:mm:ss) : {}", java.time.LocalTime.now());
 
         int statusCode = hcxResponse.getInt("status_code");
         if (statusCode == 2000) {
@@ -127,12 +127,59 @@ public class GetInfoByChatbotResponseService {
         // hcx 로 request 보내기
         JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
         
-        // 하드 코딩으로 response 저장
-
         if (hcxResponse.getInt("status_code") == 2000) {
             log.info("statusCode : 2000 -> setChatbotDateByHcxResponse");
             // chatbot 으로 보낼 response
             return setChatbotResponseService.setChatbotResponseDateByHcxResponse(hcxResponse);
+        } else {
+            return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
+        }
+    }
+
+    /*
+    3-1. 사용자가 발화한 날짜 + 시간 으로 일정 가능 여부 조회 API
+        1) chatbot 에서 가져올 정보
+            userId
+            category : DATE
+            date : 사용자가 선택한 날짜 - date(yyyy-mm-dd)
+            time : 사용자가 선택한 시간 - time(HH:MM)
+            code : 전입(Z02)/전출(Z03)
+        2) hcx response 에서 가져올 정보
+            if (data.reservation : false (예약 불가능))
+                data.schedule1.text : 사용자에게 보여줄 text
+                data.schedule1.data : 값 비교할 data
+            else (data.reservation : true (예약 가능))
+                data.reservation : true
+     */
+    public String getAvailableScheduleByHcxResp(HttpServletRequest req) {
+        String body = hcxService.getChatbotRequestBody(req);
+
+        // chatbot 에서 data 가져오기
+        JSONObject reqJson = new JSONObject(body);
+        String userId = reqJson.getString("userId");
+
+        JSONObject userVariables = reqJson.getJSONObject("userVariables");
+        String category = userVariables.getJSONObject("category").getString("value");
+        String date = userVariables.getJSONObject("date").getString("value");
+        String time = userVariables.getJSONObject("time").getString("value");
+        String code = userVariables.getJSONObject("code").getString("value");
+
+        // time 값 9~18 시 사이 시간(영업 시간)으로 변환
+        if (Integer.parseInt(time.substring(0, 2)) < 9) {
+            time = Integer.parseInt(time.substring(0, 2)) + 12 + time.substring(2);
+        } else if (Integer.parseInt(time.substring(0, 2)) > 18) {
+            time = Integer.parseInt(time.substring(0, 2)) - 12 + time.substring(2);
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("code", code);
+        data.put("date", date);
+        data.put("time", time);
+
+        JSONObject hcxResponse = hcxService.sendPostRequestToHcx(userId, category, data);
+
+        if (hcxResponse.getInt("status_code") == 2000) {
+            return setChatbotResponseService.setChatbotResponseAvailableScheduleByHcxResponse(hcxResponse);
         } else {
             return setChatbotResponseService.setChatbotResponseExceptionByHcxResponse(hcxResponse);
         }

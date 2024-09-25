@@ -6,12 +6,21 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /*
-    Chatbot 의 사용자 변수 값 저장
+    ### Chatbot 의 사용자 변수 값 저장
  */
 @Slf4j
 @Service
 public class SetChatbotResponseService {
+    /*
+    default user variables
+        - hcx_result_code : HCX API 응답 코드
+        - retry_count : HCX API 요청 시도 횟수
+     */
 
+    /*
+    1. HCX 로 주소 넘겨준 뒤, 전체 주소 값 response 로 받아서 저장
+        - user variable : address
+     */
     public String setChatbotResponseAddressByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
@@ -120,6 +129,65 @@ public class SetChatbotResponseService {
         return resJson.toString();
     }
 
+    public String setChatbotResponseAvailableScheduleByHcxResponse(JSONObject hcxResponse) {
+        JSONObject resJson = new JSONObject();
+        JSONArray userVariableJsonArray = new JSONArray();
+
+        JSONObject data = hcxResponse.getJSONObject("data");
+        /*
+        reservation : false (예약 불가)
+        data.schedule1.text, data.schedule1.data, reservation, retry_count 추출
+
+        reservation : true (예약 가능)
+        reservation, retry_count 추출
+         */
+        if (!data.getBoolean("reservation")) {
+            String schedule_text = data.getJSONObject("schedule1").getString("text");
+            String schedule_data = data.getJSONObject("schedule1").getString("data");
+            String schedule_data_12 = "";
+
+            int hour = Integer.parseInt(schedule_data.split(":")[0]);
+            int minute = Integer.parseInt(schedule_data.split(":")[1]);
+            if (hour < 12) {
+                schedule_data_12 = String.format("%02d:%02d", hour + 12, minute);
+            } else {
+                schedule_data_12 = String.format("%02d:%02d", hour - 12, minute);
+            }
+
+            JSONObject userVariableJsonObj_schedule_data = new JSONObject();
+            userVariableJsonObj_schedule_data.put("name", "schedule1_data");
+            userVariableJsonObj_schedule_data.put("value", schedule_data);
+            userVariableJsonObj_schedule_data.put("type", "TEXT");
+            userVariableJsonObj_schedule_data.put("action", "EQ");
+            userVariableJsonObj_schedule_data.put("valueType", "TEXT");
+
+            JSONObject userVariableJsonObj_schedule_data_12 = new JSONObject();
+            userVariableJsonObj_schedule_data_12.put("name", "schedule1_data_12");
+            userVariableJsonObj_schedule_data_12.put("value", schedule_data_12);
+            userVariableJsonObj_schedule_data_12.put("type", "TEXT");
+            userVariableJsonObj_schedule_data_12.put("action", "EQ");
+            userVariableJsonObj_schedule_data_12.put("valueType", "TEXT");
+
+            JSONObject userVariableJsonObj_schedule_text = new JSONObject();
+            userVariableJsonObj_schedule_text.put("name", "schedule1_text");
+            userVariableJsonObj_schedule_text.put("value", schedule_text);
+            userVariableJsonObj_schedule_text.put("type", "TEXT");
+            userVariableJsonObj_schedule_text.put("action", "EQ");
+            userVariableJsonObj_schedule_text.put("valueType", "TEXT");
+
+            userVariableJsonArray.put(userVariableJsonObj_schedule_data);
+            userVariableJsonArray.put(userVariableJsonObj_schedule_data_12);
+            userVariableJsonArray.put(userVariableJsonObj_schedule_text);
+        }
+
+        userVariableJsonArray.put(setUserVariable_hcxResultCode(hcxResponse));
+        userVariableJsonArray.put(setUserVariable_retryCount(hcxResponse));
+
+        resJson.put("valid", "true");
+        resJson.put("userVariable", userVariableJsonArray);
+        return resJson.toString();
+    }
+
     public String setChatbotResponseDefaultByHcxResponse(JSONObject hcxResponse) {
         JSONObject resJson = new JSONObject();
         JSONArray userVariableJsonArray = new JSONArray();
@@ -177,6 +245,7 @@ public class SetChatbotResponseService {
         JSONArray userVariableJsonArray = new JSONArray();
 
         JSONObject data = hcxResponse.getJSONObject("data");
+        log.info("[setChatbotResponseIntentByHcxResponse] - data : {}", data);
 
         JSONObject userVariableJsonObj_intent_code = new JSONObject();
         userVariableJsonObj_intent_code.put("name", "code");
@@ -187,10 +256,10 @@ public class SetChatbotResponseService {
 
         JSONObject userVariableJsonObj_hcx_message = new JSONObject();
         userVariableJsonObj_hcx_message.put("name", "hcx_message");
-        userVariableJsonObj_intent_code.put("value", data.getString("hcx_message"));
-        userVariableJsonObj_intent_code.put("type", "TEXT");
-        userVariableJsonObj_intent_code.put("action", "EQ");
-        userVariableJsonObj_intent_code.put("valueType", "TEXT");
+        userVariableJsonObj_hcx_message.put("value", data.getString("hcx_message"));
+        userVariableJsonObj_hcx_message.put("type", "TEXT");
+        userVariableJsonObj_hcx_message.put("action", "EQ");
+        userVariableJsonObj_hcx_message.put("valueType", "TEXT");
 
         userVariableJsonArray.put(userVariableJsonObj_intent_code);
         userVariableJsonArray.put(userVariableJsonObj_hcx_message);
