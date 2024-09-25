@@ -60,7 +60,7 @@ public class ClovaChatbotController {
 
     @PostMapping("/{chatbotId}/close")
     public ResponseEntity<?> closeChatbot(@PathVariable String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
-        log.info("Close Chatbot : " + chatbotId);
+        log.info("# Close Chatbot : " + chatbotId);
         return ResponseEntity.ok(clovaChatbotService.closeChatbot(chatbotId, requestDto));
     }
 

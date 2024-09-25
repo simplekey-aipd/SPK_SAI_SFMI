@@ -35,7 +35,6 @@ public class ClovaChatbotService {
     }
 
     public Object sendChatbotMessage(String apiUrl, String secretKey, ChatbotRequestDto requestDto, String event) {
-        log.info("## ClovaChatbotService - sendChatbotMessage");
         String userId = requestDto.getUserId();
         String voiceMessage = requestDto.getText();
 
@@ -45,7 +44,7 @@ public class ClovaChatbotService {
             URL url = new URL(apiUrl);
             String message = getReqMessage(userId, voiceMessage, event);
             if (event.equals("send")) {
-                log.info("Request message - userId : " + userId + ", message : " + voiceMessage);
+                log.info("[sendChatbotMessage] Request message \n userId : " + userId + ", message : " + voiceMessage);
             }
 
             String encodeBase64String = makeSignature(message, secretKey);
@@ -66,7 +65,6 @@ public class ClovaChatbotService {
 
             // response
             if (connection.getResponseCode() == 200) {
-                log.info("connection.getInputStream() : " + connection.getInputStream());
                 resultMessage = getResponseMessage(connection.getInputStream(), event);
             } else {
                 String errorResponse = getResponseErrorMessage(connection.getErrorStream());
@@ -74,13 +72,13 @@ public class ClovaChatbotService {
                 log.error("Handle Error Response: " + errorResponse);
             }
         } catch (BaseException e) {
-            log.error("Handled Error: " + e);
+            log.error("[sendChatbotMessage] Handled Error: " + e);
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected Error: " + e);
+            log.error("[sendChatbotMessage] Unexpected Error: " + e);
             throw new BaseException(ErrorCode.UNKNOWN_SERVICE_ERROR);
         }
-        log.info("Response message : " + resultMessage);
+        log.info("[sendChatbotMessage] Response message : " + resultMessage);
         return resultMessage;
     }
 
@@ -123,20 +121,19 @@ public class ClovaChatbotService {
             encodeBase64String = Base64.getEncoder().encodeToString(rawHmac);
 
         } catch (BaseException e) {
-            log.error("=====Handled Error: " + e);
+            log.error("[makeSignature] Handled Error: " + e);
             throw e;
         } catch (Exception e) {
-            log.error("=====Unexpected Error: " + e);
+            log.error("[makeSignature] Unexpected Error: " + e);
             throw new BaseException(ErrorCode.UNKNOWN_SERVICE_ERROR);
         }
         return encodeBase64String;
     }
 
     private static ChatbotResponseDto getResponseMessage(InputStream inputStream, String event) throws IOException {
-        log.info("getResponseMessage - event : " + event);
         JSONObject responseMessageAsJson = getResponseMessageAsJson(inputStream);
         // responseMessageAsJson 에서 dtmf 값 가져오기
-        log.info("responseMessageAsJson : " + responseMessageAsJson);
+        log.info("[getResponseMessage] Chatbot Response Message : " + responseMessageAsJson);
         return ChatbotResponseDto.fromJsonObject(responseMessageAsJson, event);
     }
 

@@ -29,10 +29,6 @@ public class HcxAndChatbotService {
         String url = chatbotDomainService.getDomainUrl(chatbotId);
         String secretKey = chatbotDomainService.getSecretKey(chatbotId);
 
-        // TODO : resultCode 에 따라 예외 처리, resultData 로 로그 처리 (0820 예정)
-        // resultCode : 2000(성공), 2001(다시 확인 요청), 3000(FAIL), 9999(에러) 등
-        String resultCode = requestDto.getResultCode();
-
         log.info("[HcxToChatbotService] sendHcxToChatbot - result : {}", requestDto.getResultData());
 
         // HcxToChatbotRequestDto -> ChatbotRequestDto 변경 후 ChatbotService 호출
