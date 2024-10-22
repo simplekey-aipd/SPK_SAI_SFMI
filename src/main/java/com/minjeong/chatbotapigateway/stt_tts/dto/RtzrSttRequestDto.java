@@ -1,6 +1,6 @@
-package com.minjeong.chatbotapigateway.stt.dto;
+package com.minjeong.chatbotapigateway.stt_tts.dto;
 
-public class SttRequestDto {
+public class RtzrSttRequestDto {
 
 //     {
 //      "config": {

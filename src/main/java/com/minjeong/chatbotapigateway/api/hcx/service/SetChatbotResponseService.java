@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.hcx.service;
+package com.minjeong.chatbotapigateway.api.hcx.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;

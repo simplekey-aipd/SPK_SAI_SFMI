@@ -1,7 +1,5 @@
-package com.minjeong.chatbotapigateway.stt.service;
+package com.minjeong.chatbotapigateway.stt_tts.service;
 
-import com.minjeong.chatbotapigateway.stt.WavHeader;
-import com.minjeong.chatbotapigateway.stt.dto.SttResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class SttService {
+public class RtzrSttService {
 
     private boolean stopPolling = false;
     private String transcribeId = null;
@@ -38,7 +36,7 @@ public class SttService {
     private final String RTZR_CLIENT_SECRET = "qBN5K1-_9g1Mu5j8lImz_m-7EBNTQ1V7ffKIx_W1";
     private final String BP_API_KEY = "9845y2guwhvleajtp2";
 
-    public SttService() {
+    public RtzrSttService() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(RTZR_STT_API_URL)
                 .build();

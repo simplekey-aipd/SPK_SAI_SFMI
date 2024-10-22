@@ -1,7 +1,7 @@
-package com.minjeong.chatbotapigateway.hcx.service;
+package com.minjeong.chatbotapigateway.api.hcx.service;
 
-import com.minjeong.chatbotapigateway.hcx.dto.HcxRequestDto;
-import com.minjeong.chatbotapigateway.hcx.dto.HcxResponseDto;
+import com.minjeong.chatbotapigateway.api.hcx.dto.HcxRequestDto;
+import com.minjeong.chatbotapigateway.api.hcx.dto.HcxResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;

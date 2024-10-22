@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.stt.dto;
+package com.minjeong.chatbotapigateway.stt_tts.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 @Getter
 @Builder
 @AllArgsConstructor
-public class SttResponseDto {
+public class RtzrSttResponseDto {
 
     private JSONObject results;
     private JSONObject alternatives;

@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.hcx.service;
+package com.minjeong.chatbotapigateway.api.hcx.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

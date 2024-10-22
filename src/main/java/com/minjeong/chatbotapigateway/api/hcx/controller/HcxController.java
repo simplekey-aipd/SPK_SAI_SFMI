@@ -1,7 +1,7 @@
-package com.minjeong.chatbotapigateway.hcx.controller;
+package com.minjeong.chatbotapigateway.api.hcx.controller;
 
-import com.minjeong.chatbotapigateway.hcx.service.GetInfoByChatbotResponseService;
-import com.minjeong.chatbotapigateway.hcx.service.HcxTestService;
+import com.minjeong.chatbotapigateway.api.hcx.service.GetInfoByChatbotResponseService;
+import com.minjeong.chatbotapigateway.api.hcx.service.HcxTestService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

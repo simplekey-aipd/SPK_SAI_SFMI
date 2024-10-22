@@ -1,4 +1,4 @@
-package com.minjeong.chatbotapigateway.hcx.dto;
+package com.minjeong.chatbotapigateway.api.hcx.dto;
 
 
 import lombok.Getter;

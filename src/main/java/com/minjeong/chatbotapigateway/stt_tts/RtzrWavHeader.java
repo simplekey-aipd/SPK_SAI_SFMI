@@ -1,9 +1,9 @@
-package com.minjeong.chatbotapigateway.stt;
+package com.minjeong.chatbotapigateway.stt_tts;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class WavHeader {
+public class RtzrWavHeader {
 
     public static byte[] wavHeader() {
         return ByteBuffer.allocate(44)

@@ -1,6 +1,6 @@
-package com.minjeong.chatbotapigateway.stt.Controller;
+package com.minjeong.chatbotapigateway.stt_tts.Controller;
 
-import com.minjeong.chatbotapigateway.stt.service.SttService;
+import com.minjeong.chatbotapigateway.stt_tts.service.RtzrSttService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -20,19 +20,19 @@ import java.util.Map;
 @RequestMapping("/api/stt/v1")
 public class RtzrSttController {
 
-    private final SttService sttService;
+    private final RtzrSttService rtzrSttService;
 
     @PostMapping(value = "/speech-to-text:recognize")
     public ResponseEntity<?> speechToText(@RequestParam("key") String key, @RequestBody Map<String, Object> data) throws IOException, InterruptedException, JSONException {
         log.info("api key: {}", key);
-        if (!key.equals(sttService.getApiKey())) {
+        if (!key.equals(rtzrSttService.getApiKey())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(sttService.recognizeSpeech(data));
+        return ResponseEntity.ok(rtzrSttService.recognizeSpeech(data));
     }
 
     @PostMapping(value = "/encode", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> encodeAudio(@RequestPart MultipartFile audio) throws IOException {
-        return ResponseEntity.ok(sttService.encodeWavFileToBase64(audio));
+        return ResponseEntity.ok(rtzrSttService.encodeWavFileToBase64(audio));
     }
 }
