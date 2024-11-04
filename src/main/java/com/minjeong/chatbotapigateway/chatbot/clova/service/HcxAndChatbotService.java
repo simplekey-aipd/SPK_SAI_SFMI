@@ -2,6 +2,7 @@ package com.minjeong.chatbotapigateway.chatbot.clova.service;
 
 import com.minjeong.chatbotapigateway.chatbot.clova.dto.ChatbotRequestDto;
 import com.minjeong.chatbotapigateway.chatbot.clova.dto.HcxToChatbotRequestDto;
+import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainResponseDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.service.ChatbotDomainService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,9 @@ public class HcxAndChatbotService {
     */
 
     public Object sendHcxToChatbot(String chatbotId, HcxToChatbotRequestDto requestDto) {
-        String url = chatbotDomainService.getDomainUrl(chatbotId);
-        String secretKey = chatbotDomainService.getSecretKey(chatbotId);
+        ChatbotDomainResponseDto domainInfo = chatbotDomainService.getDomainInfo(chatbotId);
+        String url = domainInfo.getDomainUrl();
+        String secretKey = domainInfo.getSecretKey();
 
         log.info("[HcxToChatbotService] sendHcxToChatbot - result : {}", requestDto.getResultData());
 

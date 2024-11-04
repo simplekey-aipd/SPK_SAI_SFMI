@@ -2,7 +2,7 @@ package com.minjeong.chatbotapigateway.chatbot.clova.service;
 
 import com.minjeong.chatbotapigateway.chatbot.clova.dto.ChatbotRequestDto;
 import com.minjeong.chatbotapigateway.chatbot.clova.dto.ChatbotResponseDto;
-import com.minjeong.chatbotapigateway.chatbot.clova.dto.HcxToChatbotRequestDto;
+import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainResponseDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.service.ChatbotDomainService;
 import com.minjeong.chatbotapigateway.chatbot.global.error.BaseException;
 import com.minjeong.chatbotapigateway.chatbot.global.error.ErrorCode;
@@ -29,8 +29,9 @@ public class ClovaChatbotService {
     private final ChatbotDomainService chatbotDomainService;
 
     public Object sendRequest(String chatbotId, ChatbotRequestDto requestDto, String event) {
-        String url = chatbotDomainService.getDomainUrl(chatbotId);
-        String secretKey = chatbotDomainService.getSecretKey(chatbotId);
+        ChatbotDomainResponseDto domainInfo = chatbotDomainService.getDomainInfo(chatbotId);
+        String url = domainInfo.getDomainUrl();
+        String secretKey = domainInfo.getSecretKey();
         return sendChatbotMessage(url, secretKey, requestDto, event);
     }
 
