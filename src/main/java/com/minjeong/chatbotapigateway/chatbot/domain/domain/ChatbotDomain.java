@@ -21,12 +21,16 @@ public class ChatbotDomain extends BaseEntity {
     private String domainId;
     private String signature;
     private String secretKey;
+    private String apiKey;
+    private String type;    // clova, danbee
 
     @Builder
-    public ChatbotDomain(String chatbotName, String domainId, String signature, String secretKey) {
+    public ChatbotDomain(String chatbotName, String domainId, String signature, String secretKey, String apiKey, String type) {
         this.chatbotName = chatbotName;
         this.domainId = domainId;
         this.signature = signature;
         this.secretKey = secretKey;
+        this.apiKey = apiKey;
+        this.type = type;
     }
 }

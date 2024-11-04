@@ -1,7 +1,7 @@
 package com.minjeong.chatbotapigateway.chatbot.domain.service;
 
 import com.minjeong.chatbotapigateway.chatbot.domain.domain.ChatbotDomain;
-import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainDto;
+import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainRequestDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainResponseDto;
 import com.minjeong.chatbotapigateway.chatbot.domain.repository.ChatbotDomainRepository;
 import jakarta.transaction.Transactional;
@@ -17,43 +17,41 @@ public class ChatbotDomainService {
     private final ChatbotDomainRepository domainRepository;
 
     @Transactional
-    public ChatbotDomainResponseDto addDomain(ChatbotDomainDto dto) {
-        log.info("[DomainService] - Add domain : chatbot name = {}", dto.getChatbotName());
+    public ChatbotDomainResponseDto addDomain(ChatbotDomainRequestDto dto) {
+        log.info("[DomainService] - Add chatbot domain : name = {}, domainId = {}, type = {}", dto.getChatbotName(), dto.getDomainId(), dto.getType());
         ChatbotDomain chatbotDomain = ChatbotDomain.builder()
                 .chatbotName(dto.getChatbotName())
                 .domainId(dto.getDomainId())
                 .signature(dto.getSignature())
                 .secretKey(dto.getSecretKey())
+                .apiKey(dto.getApiKey())
+                .type(dto.getType())
                 .build();
         ChatbotDomain saved = domainRepository.save(chatbotDomain);
-        log.info("[DomainService] - Success addDomain : id = {}, domainId = {}",saved.getId(), saved.getDomainId());
-        return ChatbotDomainResponseDto.builder()
-                .result("success")
-                .id(saved.getId().toString())
-                .domainId(saved.getDomainId())
-                .build();
+        log.info("[DomainService] - Success addDomain : id = {}, domainId = {}", saved.getId(), saved.getDomainId());
+
+        return ChatbotDomainResponseDto.setDtoFromAddDomainMethod("success", saved);
     }
 
     public ChatbotDomainResponseDto getDomainInfo(String domainId) {
         ChatbotDomain domainInfo = domainRepository.findByDomainId(domainId);
         log.info("[DomainService] - Get domainInfo : id = {}, domainId = {}", domainInfo.getId(), domainInfo.getDomainId());
-        return ChatbotDomainResponseDto.builder()
-                .result("success")
-                .id(domainInfo.getId().toString())
-                .domainId(domainInfo.getDomainId())
-                .chatbotName(domainInfo.getChatbotName())
-                .signature(domainInfo.getSignature())
-                .build();
+
+        if (domainInfo.getType().equals("clova")) {
+            return ChatbotDomainResponseDto.setDto("success", domainInfo, getClovaDomainUrl(domainInfo.getDomainId(), domainInfo.getSignature()));
+        } else if (domainInfo.getType().equals("danbee")) {
+            return ChatbotDomainResponseDto.setDto("success", domainInfo, getDanbeeDomainUrl(domainInfo.getDomainId()));
+        }
+        return null;
     }
 
-    public String getDomainUrl(String chatbotId) {
-        ChatbotDomain domainInfo = domainRepository.findByDomainId(chatbotId);
+    private String getClovaDomainUrl(String domainId, String signature) {
         String ncloudDomain = "https://clovachatbot.ncloud.com/api/chatbot/messenger/v1";
-        return ncloudDomain + "/" + domainInfo.getDomainId() + "/" + domainInfo.getSignature() + "/message";
+        return ncloudDomain + "/" + domainId + "/" + signature + "/message";
     }
 
-    public String getSecretKey(String chatbotId) {
-        ChatbotDomain domainInfo = domainRepository.findByDomainId(chatbotId);
-        return domainInfo.getSecretKey();
+    private String getDanbeeDomainUrl(String domainId) {
+        String danbeeDomain = "https://danbee.ai/chatflow/chatbot/v1.0";
+        return danbeeDomain + "/" + domainId;
     }
 }

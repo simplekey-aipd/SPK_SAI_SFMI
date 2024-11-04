@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatbotDomainDto {
+public class ClovaChatbotDomainDto {
 
     private String chatbotName;
     private String domainId;
