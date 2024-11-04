@@ -1,19 +1,15 @@
 package com.minjeong.chatbotapigateway.chatbot.danbee.dto.request;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
-public class WelcomeRequestDto {
+public class DanbeeWelcomeRequestDto {
 
-    private Integer sessionId;
+    private String chatbotId;
     private String userId;
-    private String postBackFlag;
-    private ArrayNode parameters;
-
-    public WelcomeRequestDto(String userId) {
-        this.userId = userId;
-    }
 }
