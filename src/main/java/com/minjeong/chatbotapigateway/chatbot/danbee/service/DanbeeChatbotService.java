@@ -164,11 +164,10 @@ public class DanbeeChatbotService {
         return DanbeeMessageResponseDto.setErrorDto("error", response.toString());
     }
 
-    private DanbeeMessageResponseDto makeMessageResponseDto(InputStream inputStream) throws IOException {
+    private DanbeeMessageResponseDto makeMessageResponseDto(InputStream inputStream) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-
             JsonNode node = objectMapper.readValue(inputStream, JsonNode.class);
 
             log.warn("### makeMessageResponseDto: {}", node.toString());
@@ -180,7 +179,6 @@ public class DanbeeChatbotService {
             if (resultNode.get("parameters").has("bpAction")) {
                 bpAction = resultNode.get("parameters").get("bpAction").asText();
             }
-
             log.info("bpAction: {}", bpAction);
 
             StringBuilder message = new StringBuilder();

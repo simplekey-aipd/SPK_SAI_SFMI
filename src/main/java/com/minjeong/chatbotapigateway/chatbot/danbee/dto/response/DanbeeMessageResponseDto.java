@@ -23,9 +23,12 @@ public class DanbeeMessageResponseDto {
     private String message;
     private String nodeType;    // speak, slot
     private JsonNode resultStatus;    // 결과 상태 정보
+    private String userAnswer;  // 사용자 입력값
 
     @Builder(builderMethodName = "messageResponseDtoBuilder")
-    public DanbeeMessageResponseDto(String chatbotId, String userId, String bpAction, String inputSentence, String sessionId, String insId, String intentId, String nodeId, String paramId, String message, String nodeType, String timestamp, JsonNode resultStatus) {
+    public DanbeeMessageResponseDto(String chatbotId, String userId, String bpAction, String inputSentence,
+                                    String sessionId, String insId, String intentId, String nodeId, String paramId,
+                                    String message, String nodeType, JsonNode resultStatus, String userAnswer) {
         this.chatbotId = chatbotId;
         this.userId = userId;
         this.bpAction = bpAction;
@@ -38,6 +41,7 @@ public class DanbeeMessageResponseDto {
         this.message = message;
         this.nodeType = nodeType;
         this.resultStatus = resultStatus;
+        this.userAnswer = userAnswer;
     }
 
     // bpAction, message
@@ -63,6 +67,7 @@ public class DanbeeMessageResponseDto {
                 .message(message.toString())
                 .nodeType(resultNode.get("result").get(resultNodeSize-1).get("nodeType").asText())
                 .resultStatus(resultNode.get("result_status"))
+                .userAnswer(resultNode.get("parameters").get("@message").asText())
                 .build();
     }
 
