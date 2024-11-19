@@ -1,9 +1,5 @@
 server:
   port: 5001
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-type: PKCS12
-    key-store-password: tlavmfzl1!
 
 spring:
   datasource:
