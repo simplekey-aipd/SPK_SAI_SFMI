@@ -1,9 +1,10 @@
 package com.minjeong.chatbotapigateway.chatbot.danbee.dto.request;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Getter
 @AllArgsConstructor
@@ -12,4 +13,5 @@ public class DanbeeWelcomeRequestDto {
 
     private String chatbotId;
     private String userId;
+    private Map<String, Object> parameters;
 }

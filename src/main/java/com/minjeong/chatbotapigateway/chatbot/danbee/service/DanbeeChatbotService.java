@@ -11,6 +11,7 @@ import com.minjeong.chatbotapigateway.chatbot.domain.dto.ChatbotDomainResponseDt
 import com.minjeong.chatbotapigateway.chatbot.domain.service.ChatbotDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -37,7 +38,14 @@ public class DanbeeChatbotService {
             conn.setDoOutput(true);
 
             // request body
-            String jsonInputString = "{\"user_id\": \"" + dto.getUserId() + "\"}";
+            // parameter 없을 경우
+            if (dto.getParameters() == null) {
+                String jsonInputString = "{\"user_id\": \"" + dto.getUserId() + "\"}";
+                sendRequest(conn.getOutputStream(), jsonInputString);
+            }
+
+            JSONObject parameters = new JSONObject(dto.getParameters());
+            String jsonInputString = "{\"user_id\": \"" + dto.getUserId() + "\", \"parameters\": " + parameters + "}";
 
             sendRequest(conn.getOutputStream(), jsonInputString);
 
@@ -169,11 +177,11 @@ public class DanbeeChatbotService {
             log.info("msgResultNode size: {}", msgResultNodeSize);
 
             String bpAction = "chat";
-            if (resultNode.get("parameters").get("dtmf") != null) {
-                if (resultNode.get("parameters").get("dtmf").asText().equals("dtmf")) {
-                    bpAction = "dtmf";
-                }
+            if (resultNode.get("parameters").has("bpAction")) {
+                bpAction = resultNode.get("parameters").get("bpAction").asText();
             }
+
+            log.info("bpAction: {}", bpAction);
 
             StringBuilder message = new StringBuilder();
             if (resultNode.get("result").isArray()) {
