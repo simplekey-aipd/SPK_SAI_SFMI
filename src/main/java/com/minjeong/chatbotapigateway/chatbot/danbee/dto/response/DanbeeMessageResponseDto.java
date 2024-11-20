@@ -67,7 +67,7 @@ public class DanbeeMessageResponseDto {
                 .message(message.toString())
                 .nodeType(resultNode.get("result").get(resultNodeSize-1).get("nodeType").asText())
                 .resultStatus(resultNode.get("result_status"))
-                .userAnswer(resultNode.get("parameters").get("@message").asText())
+                .userAnswer(resultNode.get("parameters").get("user_answer").asText())
                 .build();
     }
 
