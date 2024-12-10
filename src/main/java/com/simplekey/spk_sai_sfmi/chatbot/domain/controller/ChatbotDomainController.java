@@ -22,8 +22,12 @@ public class ChatbotDomainController {
     }
 
     @GetMapping("/getDomainInfo")
-    public ResponseEntity<?> getDomainInfo(@RequestParam String domainId) {
+    public ResponseEntity<?> getDomainInfo(@RequestParam(value = "domainId") String domainId) {
         return ResponseEntity.ok(chatbotDomainService.getDomainInfo(domainId));
     }
 
+    @GetMapping("/getAllDomains")
+    public ResponseEntity<?> getAllDomains() {
+        return ResponseEntity.ok(chatbotDomainService.getAllDomains());
+    }
 }

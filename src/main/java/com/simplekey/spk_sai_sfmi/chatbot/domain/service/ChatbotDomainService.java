@@ -54,4 +54,8 @@ public class ChatbotDomainService {
         String danbeeDomain = "https://danbee.ai/chatflow/chatbot/v1.0";
         return danbeeDomain + "/" + domainId;
     }
+
+    public Object getAllDomains() {
+        return domainRepository.findAll();
+    }
 }
