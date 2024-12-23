@@ -18,7 +18,7 @@ public class ServletConfiguration {
 
     private Connector createStandardConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-        connector.setPort(8080);
+        connector.setPort(5000);
         return connector;
     }
 }
