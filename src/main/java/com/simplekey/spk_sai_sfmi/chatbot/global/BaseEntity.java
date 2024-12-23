@@ -13,10 +13,11 @@ import java.time.format.DateTimeFormatter;
 public abstract class BaseEntity {
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_at")
     private String createdAt;
 
     @LastModifiedDate
+    @Column(name = "updated_at")
     private String updatedAt;
 
     @PrePersist

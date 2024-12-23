@@ -11,17 +11,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "chatbot_domain")
 public class ChatbotDomain extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "chatbot_name")
     private String chatbotName;
+
+    @Column(name = "domain_id")
     private String domainId;
+
+    @Column(name = "signature")
     private String signature;
+
+    @Column(name = "secret_key")
     private String secretKey;
+
+    @Column(name = "api_key")
     private String apiKey;
+
+    @Column(name = "type")
     private String type;    // clova, danbee
 
     @Builder
