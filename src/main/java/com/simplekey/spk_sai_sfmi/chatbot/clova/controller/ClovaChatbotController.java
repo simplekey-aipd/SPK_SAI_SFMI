@@ -16,13 +16,14 @@ public class ClovaChatbotController {
     private final ClovaChatbotService clovaChatbotService;
 
     @PostMapping("/{chatbotId}/open")
-    public ResponseEntity<?> openChatbot(@PathVariable String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
+    public ResponseEntity<?> openChatbot(@PathVariable(value = "chatbotId") String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
         requestDto.setText("");
+        log.info("[Open Chatbot] : chatbotId : {}, userId : {}", chatbotId, requestDto.getUserId());
         return ResponseEntity.ok(clovaChatbotService.sendRequest(chatbotId, requestDto, "open"));
     }
 
     @PostMapping("/{chatbotId}/send")
-    public ResponseEntity<?> sendChatbotMessage(@PathVariable String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
+    public ResponseEntity<?> sendChatbotMessage(@PathVariable(value = "chatbotId") String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
         return ResponseEntity.ok(clovaChatbotService.sendRequest(chatbotId, requestDto, "send"));
     }
 
@@ -32,7 +33,7 @@ public class ClovaChatbotController {
     }
 
     @PostMapping("/{chatbotId}/close")
-    public ResponseEntity<?> closeChatbot(@PathVariable String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
+    public ResponseEntity<?> closeChatbot(@PathVariable(value = "chatbotId") String chatbotId, @RequestBody ChatbotRequestDto requestDto) {
         log.info("# Close Chatbot : " + chatbotId);
         return ResponseEntity.ok(clovaChatbotService.closeChatbot(chatbotId, requestDto));
     }
